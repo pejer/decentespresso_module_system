@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Das decent machine</title>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+<style>
+	/* milligram dark */
+
+	body {
+	    background: #2C2F34;
+	    color: #f2f2f2;
+	}
+
+	.navigation .title, .navigation-title {
+	    color: #f2f2f2;
+	}
+
+	.navigation {
+	    background: #34373C;
+	    border-bottom: .1rem solid #1B1C1D;
+	}
+
+	.header {
+	    background-color: #141518;
+	}
+
+	pre {
+	    background: #141518;
+	}
+
+	.prettyprint {
+	    color: #f2f2f2;
+	}
+
+	.prettyprint.lang-md * {
+	    color: #f2f2f2 !important;
+	}
+
+	code {
+	    background: #141518;
+	}
+
+	.prettyprint .atv {
+	    color: rgba(73, 158, 223, 1);
+	}
+	/* Milligram lime */
+
+	a {
+	    color: #01FF70;
+	}
+
+	.button, button, input[type='button'], input[type='reset'], input[type='submit'] {
+	    background-color: #01FF70;
+	    border: .1rem solid #01FF70;
+	}
+
+	.button.button-outline, button.button-outline, input[type='button'].button-outline, input[type='reset'].button-outline, input[type='submit'].button-outline {
+	    color: #01FF70;
+	}
+
+	.button.button-clear, button.button-clear, input[type='button'].button-clear, input[type='reset'].button-clear, input[type='submit'].button-clear {
+	    color: #01FF70;
+	}
+
+	pre.prettyprint .lit {
+	    color: #01FF70;
+	}
+
+	.share-icon {
+	    background-color: #01FF70;
+	    color: #ffffff;
+	}
+
+	pre {
+	    background: #f4f5f6;
+	    border-left: .3rem solid #01FF70;
+	}
+
+	pre.prettyprint {
+	    border-left: .3rem solid #01FF70 !important;
+	    color: #655d5d;
+	}
+
+	pre.prettyprint .tag {
+	    color: #01FF70;
+	}
+
+	pre.prettyprint .atn {
+	    color: #0065ce;
+	}
+
+	input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, input[type='search']:focus, input[type='tel']:focus, input[type='text']:focus, input[type='url']:focus, textarea:focus, select:focus {
+	    border: .1rem solid #01FF70;
+	}
+
+	.github-corner {
+	    color: #f4f5f6;
+	    fill: #01FF70;
+	}
+	
+	svg {
+		background: white;
+	}
+	
+	/* Style the lines by removing the fill and applying a stroke */
+	.line {
+	    fill: none;
+	    stroke: #ffab00;
+	    stroke-width: 3;
+	}
+  
+	.overlay {
+	  fill: none;
+	  pointer-events: all;
+	}
+
+	/* Style the dots by assigning a fill and stroke */
+	.dot {
+	    fill: #ffab00;
+	    stroke: #fff;
+	}
+  
+	  .focus circle {
+	  fill: none;
+	  stroke: steelblue;
+	}
+	</style>
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+	<link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+	<link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row row-no-padding" class="flex-direction:row">
+			<div class="column column-10 column-top" style="background: black; height: 100">DAs menu</div>
+			<div class="column column-90">
+				<h1>Decent machine</h1>
+				<svg width="960" height="500"></svg>
+			</div>
+		</div>
+	</div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+
+
+    var svg = d3.select("svg"),
+        margin = {top: 20, right: 80, bottom: 30, left: 50},
+        width = svg.attr("width") - margin.left - margin.right,
+        height = svg.attr("height") - margin.top - margin.bottom,
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear().range([0, width]),
+        y = d3.scaleLinear().range([height, 0]),
+        z = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var line = d3.line()
+        .curve(d3.curveBasis)
+        .x(function(d) { return x(d.time); })
+        .y(function(d) { return y(d.value); });
+	var lastData = null;
+    var calc = function(data) {
+		if (data == lastData) {
+		    return;
+		}
+		lastData = data;
+        //d3.tsv("data.tsv",null, type).then(function(data) {
+        /*
+
+           var cities = data.columns.slice(1).map(function(id) {
+               return {
+                   id: id,
+                   values: data.map(function(d) {
+                       return {date: d.date, temperature: d[id]};
+                   })
+               };
+           });
+           console.log(cities);
+           return;
+           */
+        //setup data
+        var espressodata = [];
+        var coldata = ["espresso_flow","espresso_pressure","espresso_temperature_basket"]; // "espresso_flow","espresso_pressure","espresso_temperature_basket"
+        var n = 0;
+        for (var ii in coldata) {
+            var linedata = {
+                "id":coldata[ii],
+                "values":[]
+            };
+            for (var i in data.espresso_elapsed) {
+                n++;
+                var datum = {
+                    "time": data.espresso_elapsed[i],
+                };
+                datum.value = data[coldata[ii]][i];
+                linedata.values.push(datum);
+            }
+            espressodata.push(linedata);
+        }
+
+        //espressodata.columns = coldata;
+        console.log(espressodata);
+        console.log(data);
+
+        var cities = espressodata;
+
+        //x.domain(d3.extent(data, function(d) { console.log("x-domain", d);return d.espresso_elapsed; }));
+        x.domain([0,35]);
+        y.domain([
+            d3.min(cities, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
+            d3.max(cities, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
+        ]);
+
+        z.domain(cities.map(function(c) { return c.id; }));
+
+        g.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("fill", "#000")
+            .text("Temperature, ºF");
+
+        var city = g.selectAll(".city")
+            .data(cities)
+            .enter().append("g")
+            .attr("class", "city");
+
+
+
+        city.append("path")
+            .attr("class", "line")
+            .attr("d", function(d) { return line(d.values); })
+            .style("stroke", function(d) { return z(d.id); });
+
+        city.append("text")
+            .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+            .attr("transform", function(d) {return "translate(" + x(d.value.time) + "," + y(d.value.value) + ")"; })
+            .attr("x", 3)
+            .attr("dy", "0.35em")
+            .style("font", "10px sans-serif")
+            .text(function(d) { return d.id; });
+    };
+    //
+	//setInterval(function(){d3.json("http://localhost:9005/module/pejer_twitter/web/que").then(calc);},250);
+
+</script>
+</script>
+</body>
+</html>
